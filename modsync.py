@@ -57,6 +57,44 @@ def format_size(size_bytes: float) -> str:
     return f"{size_bytes:.1f} GB"
 
 
+def parse_version(v: str) -> tuple:
+    """Превращает строку версии в кортеж для сравнения: '1.2.3' → (1, 2, 3)."""
+    if not v:
+        return (0,)
+    v = re.sub(r'^v', '', v.strip().lower())
+    parts = re.split(r'[.\-_]', v)
+    result = []
+    for p in parts:
+        try:
+            result.append(int(p))
+        except ValueError:
+            result.append(ord(p[0]) if p else 0)
+    return tuple(result) if result else (0,)
+
+
+def compare_versions(local: str, online: str) -> str:
+    """Сравнивает версии. Возвращает 'older'|'same'|'newer'|'unknown'."""
+    if not local or not online:
+        return "unknown"
+    try:
+        lv = parse_version(local)
+        ov = parse_version(online)
+        if lv < ov:
+            return "older"
+        elif lv == ov:
+            return "same"
+        else:
+            return "newer"
+    except Exception:
+        return "unknown"
+
+
+def extract_version_from_text(text: str) -> str | None:
+    """Извлекает версию из текста: v1.2.3, 2.1, 2024.12."""
+    m = re.search(r'v?(\d+\.\d+(?:\.\d+)*)', text)
+    return m.group(1) if m else None
+
+
 def load_api_key(env_key: str) -> str:
     """Загружает API ключ из .env или переменных окружения."""
     key = os.environ.get(env_key, "")
@@ -168,15 +206,24 @@ def check_curseforge(mods: list[dict]) -> list[dict]:
             last_req = time.time()
 
             for item in data.get("data", [])[:1]:
-                updates.append({
-                    "file": mod["file"],
-                    "local_name": mod["name"],
-                    "source": "CurseForge",
-                    "online_name": item.get("name", "?"),
-                    "updated": item.get("dateModified", "?"),
-                    "url": item.get("links", {}).get("websiteUrl", ""),
-                    "status": "найдено",
-                })
+                    # Сравниваем версии
+                    online_version = extract_version_from_text(item.get("name", ""))
+                    local_version = mod.get("version_raw")
+                    cmp = compare_versions(local_version, online_version)
+                    status_map = {"older": "🔄 устарел", "newer": "✅ актуален", "same": "✅ актуален", "unknown": "❓ проверь"}
+                    status = status_map.get(cmp, "❓ проверь")
+
+                    updates.append({
+                        "file": mod["file"],
+                        "local_name": mod["name"],
+                        "source": "CurseForge",
+                        "online_name": item.get("name", "?"),
+                        "local_version": local_version,
+                        "online_version": online_version,
+                        "updated": item.get("dateModified", "?"),
+                        "url": item.get("links", {}).get("websiteUrl", ""),
+                        "status": status,
+                    })
         except HTTPError as e:
             if e.code == 403:
                 break
