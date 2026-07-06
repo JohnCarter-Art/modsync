@@ -21,157 +21,211 @@ HTML = r"""
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ModSync — The Sims 4</title>
 <style>
-:root{--bg:#0f172a;--bg2:#1e293b;--text:#e2e8f0;--accent:#22c55e;--warn:#eab308;--err:#ef4444;--border:#334155;--radius:8px}
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
-.header{background:var(--bg2);padding:12px 20px;border-bottom:2px solid var(--accent);display:flex;justify-content:space-between;align-items:center}
-.header h1{font-size:1.2rem;color:var(--accent)}
-.container{padding:16px;max-width:1200px;margin:0 auto}
-.panel{background:var(--bg2);border-radius:var(--radius);padding:14px;margin-bottom:12px}
-.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-.btn{padding:8px 18px;border-radius:var(--radius);border:none;cursor:pointer;font-size:14px;font-weight:600;transition:all .2s}
-.btn-scan{background:var(--accent);color:#000}
-.btn-check{background:#3b82f6;color:#fff}
-.btn-rescan{background:var(--warn);color:#000}
-.btn:hover{opacity:.85;transform:translateY(-1px)}
-.chip{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:600;border:1px solid var(--border)}
-.chip input{cursor:pointer}
-.source-info{font-size:11px;color:#94a3b8;margin-left:4px}
-table{width:100%;border-collapse:collapse;font-size:13px}
-th{text-align:left;padding:10px 6px;border-bottom:2px solid var(--accent);color:var(--accent);font-size:11px;text-transform:uppercase}
-td{padding:8px 6px;border-bottom:1px solid var(--border);word-break:break-word}
-tr:hover{background:rgba(255,255,255,.03)}
-.status-ok{color:var(--accent)}
-.status-warn{color:var(--warn)}
-.status-err{color:var(--err)}
-.score-bar{height:4px;border-radius:2px;background:var(--border);margin-top:2px}
-.score-fill{height:100%;border-radius:2px;transition:width .3s}
-.score-high{background:var(--accent)}
-.score-mid{background:var(--warn)}
-.score-low{background:var(--err)}
-#results{max-height:500px;overflow-y:auto}
-#loading{display:none;text-align:center;padding:20px}
-.spinner{width:24px;height:24px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .6s linear infinite;margin:0 auto}
+:root{--bg:#0a0e17;--bg2:#111827;--bg3:#1e293b;--text:#f1f5f9;--text2:#94a3b8;--accent:#22c55e;--accent2:#16a34a;--warn:#f59e0b;--err:#ef4444;--blue:#3b82f6;--purple:#8b5cf6;--pink:#ec4899;--orange:#f97316;--border:#1e293b;--border2:#334155;--radius:12px;--shadow:0 4px 24px rgba(0,0,0,.3)}
+body{font-family:Inter,-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+.header{background:linear-gradient(135deg,#0f172a,#1a2332,#0f172a);border-bottom:1px solid var(--border2);padding:16px 24px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100;backdrop-filter:blur(12px)}
+.header h1{font-size:1.1rem;font-weight:700;background:linear-gradient(90deg,var(--accent),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.header h1 span{font-weight:400;background:none;-webkit-text-fill-color:var(--text2);font-size:0.9rem}
+.stats{font-size:12px;color:var(--text2);display:flex;gap:16px;align-items:center}
+.badge{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
+.badge-green{background:rgba(34,197,94,.15);color:var(--accent)}
+.container{max-width:1280px;margin:0 auto;padding:20px 24px}
+
+.card{background:var(--bg2);border-radius:var(--radius);padding:20px;margin-bottom:16px;border:1px solid var(--border);transition:border-color .2s}
+.card:hover{border-color:var(--border2)}
+.card-title{font-size:13px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:14px}
+.card-title .count{color:var(--text);margin-left:6px}
+
+.btn-group{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btn{padding:9px 20px;border-radius:8px;border:none;cursor:pointer;font-size:13px;font-weight:600;transition:all .2s;display:inline-flex;align-items:center;gap:6px;font-family:inherit}
+.btn:active{transform:scale(.96)}
+.btn-primary{background:var(--accent);color:#000;box-shadow:0 2px 12px rgba(34,197,94,.25)}
+.btn-primary:hover{background:var(--accent2);box-shadow:0 4px 20px rgba(34,197,94,.35)}
+.btn-secondary{background:var(--blue);color:#fff;box-shadow:0 2px 12px rgba(59,130,246,.25)}
+.btn-secondary:hover{background:#2563eb;box-shadow:0 4px 20px rgba(59,130,246,.35)}
+.btn-all{background:linear-gradient(135deg,var(--accent),var(--blue));color:#fff;box-shadow:0 2px 12px rgba(34,197,94,.2)}
+.btn-all:hover{opacity:.9}
+
+.chip-group{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+.chip{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid var(--border2);background:var(--bg3);color:var(--text2);transition:all .2s;user-select:none}
+.chip:hover{border-color:var(--accent);color:var(--text)}
+.chip.checked{background:rgba(34,197,94,.1);border-color:var(--accent);color:var(--accent)}
+.chip .dot{width:6px;height:6px;border-radius:50%;display:inline-block}
+.dot-curseforge{background:var(--orange)}.dot-modthesims{background:var(--purple)}
+.dot-thesimscc{background:var(--pink)}.dot-patreon{background:var(--err)}.dot-vk{background:var(--blue)}
+.key-hint{font-size:9px;color:var(--text2);opacity:.6}
+
+.stat-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:16px}
+.stat-card{padding:16px;border-radius:8px;border:1px solid var(--border);text-align:center}
+.stat-card .num{font-size:24px;font-weight:700;color:var(--text)}
+.stat-card .label{font-size:11px;color:var(--text2);margin-top:2px}
+
+.table-wrap{overflow-x:auto;border-radius:8px;border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:13px;min-width:600px}
+th{text-align:left;padding:10px 12px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--text2);border-bottom:1px solid var(--border);background:var(--bg3)}
+td{padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,.02)}
+.file-name{font-weight:500;color:var(--text)}
+.file-path{font-size:10px;color:var(--text2);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:300px}
+
+.result-item{padding:12px;border-radius:8px;border:1px solid var(--border);margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;transition:all .2s}
+.result-item:hover{border-color:var(--border2);background:rgba(255,255,255,.01)}
+.result-left{flex:1;min-width:200px}
+.result-right{display:flex;align-items:center;gap:8px}
+.result-source{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;padding:2px 8px;border-radius:4px}
+.src-curseforge{background:rgba(249,115,22,.1);color:var(--orange)}
+.src-modthesims{background:rgba(139,92,246,.1);color:var(--purple)}
+.src-thesimscc{background:rgba(236,72,153,.1);color:var(--pink)}
+.src-patreon{background:rgba(239,68,68,.1);color:var(--err)}
+.src-vk{background:rgba(59,130,246,.1);color:var(--blue)}
+
+.source-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;margin-top:8px}
+.source-card{padding:12px;border-radius:8px;border:1px solid var(--border)}
+.source-card .name{font-size:12px;font-weight:600}
+.bar-full{height:3px;border-radius:2px;background:var(--border);margin-top:6px;overflow:hidden}
+.bar-fill{height:100%;border-radius:2px;transition:width .6s cubic-bezier(.4,0,.2,1)}
+.bar-green{background:var(--accent)}.bar-yellow{background:var(--warn)}.bar-red{background:var(--err)}
+.source-warn{font-size:9px;color:var(--warn);margin-top:2px}
+
+#loadingOverlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(10,14,23,.7);backdrop-filter:blur(4px);z-index:999;justify-content:center;align-items:center}
+#loadingOverlay.active{display:flex}
+.loading-card{background:var(--bg2);padding:30px 40px;border-radius:var(--radius);text-align:center;border:1px solid var(--border);box-shadow:var(--shadow)}
+.spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 12px}
 @keyframes spin{to{transform:rotate(360deg)}}
-.empty{padding:30px;text-align:center;color:#64748b;font-size:14px}
-.stats{font-size:12px;color:#94a3b8}
-.stats b{color:var(--text)}
+.loading-text{font-size:13px;color:var(--text2)}
+
+.empty{text-align:center;padding:30px 20px;color:var(--text2);font-size:13px}
+.empty-icon{font-size:32px;margin-bottom:8px;opacity:.5}
+
+.status{font-weight:600;font-size:12px;display:inline-flex;align-items:center;gap:4px}
+.status-older{color:var(--err)}.status-same{color:var(--accent)}.status-unknown{color:var(--warn)}
+.link-btn{color:var(--blue);font-size:12px;text-decoration:none;font-weight:500}
+.link-btn:hover{text-decoration:underline}
+
+.toast{position:fixed;bottom:24px;right:24px;padding:12px 20px;border-radius:8px;font-size:13px;font-weight:500;z-index:1000;box-shadow:var(--shadow);animation:slideUp .3s ease}
+.toast-success{background:var(--accent);color:#000}
+.toast-error{background:var(--err);color:#fff}
+.toast-info{background:var(--blue);color:#fff}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}}
+.card{animation:fadeIn .3s ease}
 </style>
 </head>
 <body>
 <div class="header">
-  <h1>📦 ModSync — The Sims 4</h1>
-  <div class="stats" id="infoStats">Загрузка...</div>
+  <h1>ModSync <span>The Sims 4</span></h1>
+  <div class="stats" id="infoStats"><span class="badge badge-green">⏳ загрузка...</span></div>
 </div>
 <div class="container">
 
-  <div class="panel">
-    <div class="row">
-      <button class="btn btn-scan" onclick="doScan()">🔍 Сканировать моды</button>
-      <button class="btn btn-check" onclick="doCheck()">🔗 Проверить обновления</button>
-    </div>
-    <div style="margin-top:12px">
-      <div class="row" id="sourceChips"></div>
-    </div>
+  <div class="stat-cards" id="statCards">
+    <div class="stat-card"><div class="num">—</div><div class="label">Модов</div></div>
+    <div class="stat-card"><div class="num">—</div><div class="label">Размер</div></div>
+    <div class="stat-card"><div class="num">—</div><div class="label">Найдено</div></div>
   </div>
 
-  <div class="panel">
-    <div style="display:flex;justify-content:space-between;margin-bottom:8px">
-      <span><b>📦 Моды</b> <span id="modCount">0</span></span>
-      <span id="modSize">—</span>
+  <div class="card">
+    <div class="btn-group">
+      <button class="btn btn-primary" onclick="doScan()">Сканировать</button>
+      <button class="btn btn-secondary" onclick="doCheck()">Проверить</button>
+      <button class="btn btn-all" onclick="getAll()">Сканировать + проверить</button>
     </div>
-    <div style="max-height:400px;overflow-y:auto">
+    <div class="chip-group" id="sourceChips"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title" style="margin-bottom:0">Установленные <span class="count" id="modCount">0</span></div>
+    <div class="table-wrap" style="max-height:360px;overflow-y:auto">
       <table><thead><tr><th>Файл</th><th>Автор</th><th>Версия</th><th>Размер</th><th>Дата</th></tr></thead>
-      <tbody id="modTable"><tr><td colspan="5" class="empty">Нажми «Сканировать», чтобы начать</td></tr></tbody>
-      </table>
+      <tbody id="modTable"><tr><td colspan="5"><div class="empty"><div class="empty-icon">📂</div>Нажми Сканировать</div></td></tr></tbody></table>
     </div>
   </div>
 
-  <div class="panel">
-    <div style="display:flex;justify-content:space-between;margin-bottom:8px">
-      <span><b>🔄 Обновления</b> <span id="updCount">0</span></span>
-    </div>
-    <div id="results"><div class="empty">Нажми «Проверить обновления»</div></div>
+  <div class="card">
+    <div class="card-title" style="margin-bottom:12px">Обновления <span class="count" id="updCount">0</span></div>
+    <div id="results"><div class="empty"><div class="empty-icon">🔍</div>Нажми Проверить обновления</div></div>
   </div>
 
-  <div class="panel" id="sourcesStatus" style="display:none">
-    <b>🔐 Надёжность источников</b>
-    <div id="sourceBars" style="margin-top:8px"></div>
+  <div class="card" id="sourcesCard" style="display:none">
+    <div class="card-title" style="margin-bottom:12px">Наджность источников</div>
+    <div class="source-grid" id="sourceGrid"></div>
   </div>
-
-  <div id="loading"><div class="spinner"></div><p style="margin-top:8px">Работаю...</p></div>
 
 </div>
 
+<div id="loadingOverlay">
+  <div class="loading-card">
+    <div class="spinner"></div>
+    <div class="loading-text">Работаю...</div>
+  </div>
+</div>
+
 <script>
-let mods=[], results=[];
+let mods=[],results=[];
+const L={curseforge:'CurseForge',modthesims:'ModTheSims',thesimscc:'thesims.cc',patreon:'Patreon',vk:'VK'};
+const T={curseforge:'CURSEFORGE_API_KEY',modthesims:'MODTHESIMS_API_KEY',thesimscc:'no key',patreon:'PATREON_API_KEY',vk:'VK_API_KEY'};
 
-function doScan(){showLoading();fetch('/api/scan').then(r=>r.json()).then(d=>{mods=d.mods;renderMods();updateStats(d);hideLoading()})}
-function doCheck(){
-  showLoading();
-  let srcs=[...document.querySelectorAll('.chip input:checked')].map(e=>e.value).join(',');
-  fetch('/api/check?source='+encodeURIComponent(srcs)).then(r=>r.json()).then(d=>{results=d.updates;renderResults();updateSources(d.sources);hideLoading()})
-}
-function getAll(){doScan().then(()=>setTimeout(doCheck,500))}
+function toast(m,t){const e=document.createElement('div');e.className='toast toast-'+t;e.textContent=m;document.body.appendChild(e);setTimeout(()=>e.remove(),3000)}
+function ld(t){document.querySelector('.loading-text').textContent=t;document.getElementById('loadingOverlay').classList.add('active')}
+function hl(){document.getElementById('loadingOverlay').classList.remove('active')}
 
-function renderMods(){
-  document.getElementById('modCount').textContent=mods.length+' модов';
-  let h='';
-  mods.sort((a,b)=>a.name.localeCompare(b.name));
+function doScan(){ld('Сканирование...');fetch('/api/scan').then(r=>r.json()).then(d=>{mods=d.mods;rM();rS(d);hl();toast('Найдено '+d.count+' модов','success')}).catch(()=>{hl();toast('Ошибка','error')})}
+function doCheck(){ld('Проверка...');let s=[...document.querySelectorAll('.chip.checked')].map(e=>e.dataset.src).join(',');fetch('/api/check?source='+encodeURIComponent(s)).then(r=>r.json()).then(d=>{results=d.updates;rR();uS(d.sources);hl();toast(results.length?'Найдено '+results.length:'Вс актуально',results.length?'info':'success')}).catch(()=>{hl();toast('Ошибка','error')})}
+function getAll(){ld('Полный цикл...');fetch('/api/scan').then(r=>r.json()).then(d=>{mods=d.mods;rM();return fetch('/api/check?source='+[...document.querySelectorAll('.chip.checked')].map(e=>e.dataset.src).join(','))}).then(r=>r.json()).then(d=>{results=d.updates;rR();uS(d.sources);hl();toast('Готово!','success')}).catch(()=>{hl();toast('Ошибка','error')})}
+
+function rM(){
+  document.getElementById('modCount').textContent=mods.length;
+  let h='';mods.sort((a,b)=>a.name.localeCompare(b.name));
   mods.forEach(m=>{
-    let auth=m.author||'-',ver=m.version_raw||'-';
-    h+=`<tr><td title="${m.file}">${esc(m.name)}</td><td>${esc(auth)}</td><td>${esc(ver)}</td><td>${esc(formatSize(m.size))}</td><td>${esc(m.modified.substring(0,10))}</td></tr>`;
+    let a=m.author||'-',v=m.version_raw||'<span style=color:var(--text2)>--</span>';
+    h+='<tr><td><div class=file-name>'+esc(m.name)+'</div><div class=file-path>'+esc(m.file)+'</div></td><td>'+esc(a)+'</td><td>'+v+'</td><td>'+fs(m.size)+'</td><td>'+esc((m.modified||'').substring(0,10))+'</td></tr>'
   });
-  document.getElementById('modTable').innerHTML=h||'<tr><td colspan=5 class=empty>Моды не найдены</td></tr>';
+  document.getElementById('modTable').innerHTML=h||'<tr><td colspan=5><div class=empty><div class=empty-icon>📭</div>Моды не найдены</div></td></tr>'
 }
 
-function renderResults(){
-  document.getElementById('updCount').textContent=results.length+' найдено';
-  if(!results.length){document.getElementById('results').innerHTML='<div class=empty>✅ Обновлений не найдено (или нет ключей API)</div>';return}
-  let h='<table><tr><th>Источник</th><th>Локальный</th><th>Найден</th><th>Ссылка</th></tr>';
+function rR(){
+  document.getElementById('updCount').textContent=results.length;
+  if(!results.length){document.getElementById('results').innerHTML='<div class=empty><div class=empty-icon>✅</div>Обновлений не найдено</div>';return}
+  let h='';
   results.forEach(r=>{
-    h+=`<tr><td>${esc(r.source)}</td><td>${esc(r.local_name)}</td><td>${esc(r.online_name||'—')}</td><td>${r.url?`<a href="${esc(r.url)}" target=_blank style=color:var(--accent) title="${esc(r.status||'')}">открыть</a>`:'—'}</td></tr>`;
+    let sc='src-'+r.source.toLowerCase().replace(/[^a-z]/g,'');
+    let st=r.status||'',stc='';if(st.includes('устарел'))stc='status-older';else if(st.includes('актуален'))stc='status-same';else stc='status-unknown';
+    h+='<div class=result-item><div class=result-left><div style=display:flex;align-items:center;gap:6px;margin-bottom:2px><span class="result-source '+sc+'">'+esc(r.source)+'</span><span class=file-name>'+esc(r.local_name)+'</span></div>';
+    if(r.local_version)h+='<span style=font-size:11px;color:var(--text2)>v'+esc(r.local_version)+(r.online_version?' vs '+esc(r.online_version):'')+'</span>';
+    h+='</div><div class=result-right><span class="status '+stc+'">'+esc(st)+'</span>';
+    if(r.url)h+='<a class=link-btn href='+esc(r.url)+' target=_blank>открыть</a>';
+    h+='</div></div>'
   });
-  document.getElementById('results').innerHTML=h+'</table>';
+  document.getElementById('results').innerHTML=h
 }
 
-function updateStats(d){
-  document.getElementById('infoStats').innerHTML=`📁 <b>${esc(d.path||'?')}</b> &nbsp; 📦 <b>${d.count||0}</b> &nbsp; 💾 <b>${esc(d.size||'?')}</b>`;
-  document.getElementById('modSize').innerHTML='💾 '+esc(d.size||'0');
-}
-
-function updateSources(sources){
-  let d=document.getElementById('sourceBars');
-  let h='';
-  for(let[s,info] of Object.entries(sources||{})){
-    let cl=info.score>=70?'score-high':info.score>=40?'score-mid':'score-low';
-    h+=`<div style="margin-bottom:6px"><div style="display:flex;justify-content:space-between;font-size:12px"><span><b>${esc(s)}</b></span><span>${info.score}%</span></div>`;
-    h+=`<div class=score-bar><div class="score-fill ${cl}" style="width:${info.score}%"></div></div>`;
-    if(info.warnings)info.warnings.forEach(w=>h+=`<div style="font-size:10px;color:var(--warn)">${esc(w)}</div>`);
-    h+='</div>';
+function uS(s){
+  let g=document.getElementById('sourceGrid'),h='';
+  for(let[n,i] of Object.entries(s||{})){
+    let cl=i.score>=70?'bar-green':i.score>=40?'bar-yellow':'bar-red';
+    h+='<div class=source-card><div style=display:flex;justify-content:space-between><span class=name>'+esc(n)+'</span><span style=font-size:11px;color:var(--text2)>'+i.score+'%</span></div><div class=bar-full><div class="bar-fill '+cl+'" style=width:'+i.score+'%></div></div>';
+    if(i.warnings)i.warnings.forEach(w=>h+='<div class=source-warn>'+esc(w)+'</div>');
+    h+='</div>'
   }
-  d.innerHTML=h;
-  document.getElementById('sourcesStatus').style.display='block';
+  g.innerHTML=h;document.getElementById('sourcesCard').style.display='block'
 }
 
-function showLoading(){document.getElementById('loading').style.display='block'}
-function hideLoading(){document.getElementById('loading').style.display='none'}
+function rS(d){
+  document.getElementById('statCards').innerHTML='<div class=stat-card><div class=num>'+(d.count||0)+'</div><div class=label>Модов</div></div><div class=stat-card><div class=num>'+esc(d.size||'0')+'</div><div class=label>Размер</div></div><div class=stat-card><div class=num>'+results.length+'</div><div class=label>Найдено</div></div>';
+  document.getElementById('infoStats').innerHTML='<span class="badge badge-green">'+esc(d.path||'')+'</span>'
+}
+
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
-function formatSize(b){return b<1024?b+' B':b<1048576?(b/1024).toFixed(0)+' KB':(b/1048576).toFixed(1)+' MB'}
+function fs(b){return b<1024?b+' B':b<1048576?(b/1024).toFixed(0)+' KB':(b/1048576).toFixed(1)+' MB'}
 
-// Источники-чипсы
-(function(){
-  let srcs=['curseforge','modthesims','thesimscc','patreon','vk'];
-  let labels={'curseforge':'CurseForge','modthesims':'ModTheSims','thesimscc':'thesims.cc','patreon':'Patreon','vk':'ВКонтакте'};
-  let tips={'curseforge':'CURSEFORGE_API_KEY','modthesims':'MODTHESIMS_API_KEY','patreon':'PATREON_API_KEY','vk':'VK_API_KEY','thesimscc':'без ключа'};
-  let h='';
-  srcs.forEach(s=>h+=`<label class="chip" title="${esc(tips[s])}"><input type=checkbox value="${s}" checked> ${esc(labels[s])}<span class=source-info>${esc(tips[s])}</span></label>`);
-  h+='<button class="btn btn-rescan" onclick="getAll()" style="margin-left:auto">🔄 Всё сразу</button>';
-  document.getElementById('sourceChips').innerHTML=h;
-})();
-
-// Авто-загрузка при открытии
-fetch('/api/info').then(r=>r.json()).then(d=>updateStats(d));
+!function(){let h='';['curseforge','modthesims','thesimscc','patreon','vk'].forEach(s=>{h+='<label class="chip checked" data-src='+s+' onclick=this.classList.toggle("checked")><span class="dot dot-'+s+'"></span>'+L[s]+'<span class=key-hint>'+T[s]+'</span></label>'});document.getElementById('sourceChips').innerHTML=h}();
+fetch('/api/info').then(r=>r.json()).then(d=>{if(d.count>0){fetch('/api/scan').then(r=>r.json()).then(d=>{mods=d.mods;rM();rS(d)})}});
 </script>
 </body>
 </html>
@@ -185,12 +239,11 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         path = self.path.split("?")[0]
 
-        if path == "/" or path == "/index.html":
+        if path in ("/", "/index.html"):
             self._html(HTML)
         elif path == "/api/info":
             d = find_mods_dir()
-            info = {"path": str(d) if d else "?",
-                    "count": 0, "size": "0"}
+            info = {"path": str(d) if d else "?", "count": 0, "size": "0"}
             if d and d.exists():
                 mods = scan_mods(d)
                 total = sum(m["size"] for m in mods)
@@ -226,13 +279,12 @@ class Handler(BaseHTTPRequestHandler):
             sources_status = {}
             updates = check_mods(mods, source)
 
-            # Reliability check
             urls = {
                 "CurseForge": "https://api.curseforge.com",
                 "ModTheSims": "https://api.modthesims.info",
                 "thesims.cc": "https://thesims.cc",
                 "Patreon": "https://www.patreon.com",
-                "ВКонтакте": "https://api.vk.com",
+                "VK": "https://api.vk.com",
             }
             for s, url in urls.items():
                 sources_status[s] = check_reliability(url)
@@ -260,18 +312,16 @@ class Handler(BaseHTTPRequestHandler):
 def run_gui():
     mods_dir = find_mods_dir()
     if mods_dir:
-        print(f"📁 Папка модов: {mods_dir}")
+        print(f"Папка модов: {mods_dir}")
     else:
-        print("⚠️  Папка Mods не найдена. Укажи --dir при сканировании вручную.")
-
-    print(f"\n🎨 ModSync GUI: http://localhost:{PORT}")
-    print(f"   Открой в браузере ↑")
+        print("Папка Mods не найдена.")
+    print(f"\nModSync GUI: http://localhost:{PORT}")
 
     server = HTTPServer(("127.0.0.1", PORT), Handler)
     try:
         server.serve_forever()
     except KeyboardInterrupt:
-        print("\n👋 Закрыто")
+        print("\nЗакрыто")
 
 
 if __name__ == "__main__":
