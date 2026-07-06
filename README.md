@@ -1,52 +1,68 @@
-# ModSync — Автоматическое обновление модов Sims 4
+# ModSync — Обновление модов The Sims 4
 
-Следит за модами для **The Sims 4** и проверяет обновления через CurseForge API.
-Работает на **Windows** и **Linux**.
+[![Platform](https://img.shields.io/badge/platform-Windows%20|%20Linux-blue)]()
+[![Python](https://img.shields.io/badge/python-3.8%2B-green)]()
+[![License](https://img.shields.io/badge/license-MIT-orange)]()
+
+Сканирует папку `Mods`, находит устаревшие моды и проверяет обновления по 5 источникам.
+
+## Возможности
+
+- 📁 **Автопоиск папки Mods** — работает на Windows и Linux
+- 📦 **Сканирование** — читает `.package` и `.ts4script`, извлекает версию из имени файла
+- 🔍 **5 источников** — проверка обновлений везде где можно
+- 🎨 **GUI** — веб-интерфейс с таблицей модов и кнопками
+- 🛡️ **Проверка надёжности** — SSL + время ответа для каждого источника
+
+## Источники
+
+| Источник | API ключ | Сравнение версий |
+|---|---|---|
+| **CurseForge** | `CURSEFORGE_API_KEY` | ✅ Автоматическое |
+| **ModTheSims** | `MODTHESIMS_API_KEY` | ✅ Автоматическое |
+| **thesims.cc** | не нужен | ❌ ручная проверка |
+| **Patreon** | `PATREON_API_KEY` | ❌ ручная проверка |
+| **ВКонтакте** | `VK_API_KEY` | ❌ ручная проверка |
 
 ## Установка
 
 ```bash
 git clone https://github.com/JohnCarter-Art/modsync
 cd modsync
-# Зависимостей нет — только стандартная библиотека Python
+pip install -r requirements.txt  # можно пропустить — зависимости не требуются
 ```
 
 ## Использование
 
 ```bash
-# Показать инфо о папке Mods
-python modsync.py
+# CLI
+python modsync.py scan              # просканировать папку Mods
+python modsync.py list              # показать кэш
+python modsync.py check             # проверить все источники
+python modsync.py check --source curseforge  # только CurseForge
 
-# Просканировать моды
-python modsync.py scan
-
-# Показать список из кэша
-python modsync.py list
-
-# Проверить обновления через CurseForge (нужен API ключ)
-python modsync.py check
-
-# Указать папку вручную
-python modsync.py scan --dir "C:\\Users\\...\\Mods"
+# GUI (веб-интерфейс)
+python modsync_gui.py               # открыть http://localhost:9876
 ```
 
-## CurseForge API ключ
+## Настройка API ключей
 
-1. Зайди на https://developers.curseforge.com
-2. Создай приложение → получи ключ
-3. Создай файл `.env` рядом с `modsync.py`:
+Создай файл `.env` рядом с `modsync.py`:
 
-```
-CURSEFORGE_API_KEY=***```
-
-4. Или через переменную окружения:
+```env
+CURSEFORGE_API_KEY=***MODTHESIMS_API_KEY=*** Или через переменные окружения:
 ```bash
 export CURSEFORGE_API_KEY=***```
 
-## Как работает
+## Как определяются версии
 
-- Автоматически находит папку Mods (стандартные пути)
-- Сканирует `.package` и `.ts4script` файлы
-- Извлекает автора, название и версию из имени файла
-- Проверяет обновления через CurseForge API
-- Сохраняет кэш в `.modsync_cache.json` для быстрого доступа
+- **Локально**: из имени файла формата `Author_ModName_v1.2.3.package`
+- **CurseForge/ModTheSims**: из названия на сайте
+- **Статус**: `🔄 устарел`, `✅ актуален`, `❓ проверить вручную`
+- Если версию не удалось извлечь — мод помечается `❓`
+
+## Системные требования
+
+- Python 3.8+
+- Windows или Linux
+- The Sims 4 (стандартная папка `Documents/Electronic Arts/The Sims 4/Mods`)
