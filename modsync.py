@@ -252,14 +252,20 @@ def check_modthesims(mods: list[dict]) -> list[dict]:
         time.sleep(RATE_LIMIT)
 
         for item in data.get("results", [])[:1]:
+            online_version = extract_version_from_text(item.get("name", ""))
+            local_version = mod.get("version_raw")
+            cmp = compare_versions(local_version, online_version)
+            sm = {"older": "🔄 устарел", "newer": "✅ актуален", "same": "✅ актуален", "unknown": "❓ версия не найдена"}
             updates.append({
                 "file": mod["file"],
                 "local_name": mod["name"],
                 "source": "ModTheSims",
                 "online_name": item.get("name", "?"),
+                "local_version": local_version,
+                "online_version": online_version,
                 "updated": item.get("updated", "?"),
                 "url": item.get("url", ""),
-                "status": "найдено",
+                "status": sm.get(cmp, sm["unknown"]),
             })
 
     return updates
@@ -291,13 +297,15 @@ def check_thesimscc(mods: list[dict]) -> list[dict]:
             found = False
             for match in re.finditer(r'href="(/threads/[^"]+)"', html):
                 thread_url = base + match.group(1)
+                local_version = mod.get("version_raw")
+                ver_hint = f" (v{local_version})" if local_version else ""
                 updates.append({
                     "file": mod["file"],
                     "local_name": mod["name"],
                     "source": "thesims.cc",
                     "online_name": title,
                     "url": thread_url,
-                    "status": "ссылка (проверь вручную)",
+                    "status": f"ссылка{ver_hint}",
                     "score": reliability["score"],
                 })
                 found = True
@@ -331,13 +339,15 @@ def check_patreon(mods: list[dict]) -> list[dict]:
         time.sleep(RATE_LIMIT)
 
         if data.get("data"):
+            local_version = mod.get("version_raw")
+            ver_hint = f" (v{local_version})" if local_version else ""
             updates.append({
                 "file": mod["file"],
                 "local_name": mod["name"],
                 "source": "Patreon",
                 "online_name": author or title,
                 "url": f"https://www.patreon.com/search?q={quote(query)}",
-                "status": "найдено (проверь вручную)",
+                "status": f"проверь вручную{ver_hint}",
             })
 
     return updates
@@ -365,13 +375,15 @@ def check_vk(mods: list[dict]) -> list[dict]:
         for item in data.get("response", {}).get("items", [])[:1]:
             post_id = item.get("id", "")
             owner_id = item.get("owner_id", "")
+            local_version = mod.get("version_raw")
+            ver_hint = f" (v{local_version})" if local_version else ""
             updates.append({
                 "file": mod["file"],
                 "local_name": mod["name"],
                 "source": "ВКонтакте",
                 "online_name": title,
                 "url": f"https://vk.com/wall{owner_id}_{post_id}",
-                "status": "найдено (проверь вручную)",
+                "status": f"проверь вручную{ver_hint}",
             })
 
     return updates
